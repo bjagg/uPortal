@@ -165,7 +165,9 @@ public class PersonAttributesGroupTestDefinitionImpl implements IPersonAttribute
         }
 
         org.dom4j.Element elementTest = DocumentHelper.createElement(new QName("test"));
-        elementTest.addElement("attribute-name").addText(this.getAttributeName());
+        if (StringUtils.isNotBlank(this.getAttributeName())) {
+            elementTest.addElement("attribute-name").addText(this.getAttributeName());
+        }
         elementTest.addElement("tester-class").addText(this.getTesterClassName());
         elementTest.addElement("test-value").addText(this.getTestValue());
         parent.add(elementTest);
