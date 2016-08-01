@@ -27,6 +27,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.pluto.container.PortletPreference;
 import org.jasig.portal.portlet.marketplace.MarketplacePortletDefinition;
 import org.jasig.portal.portlet.marketplace.PortletReleaseNotes;
 import org.jasig.portal.portlet.marketplace.ScreenShot;
@@ -54,7 +55,10 @@ public class MarketplaceEntry  implements Serializable {
         return rslt;
     }
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
+    private static final String PREF_WIDGET_TYPE = "widgetType";
+    private static final String PREF_WIDGET_URL = "widgetURL";
+    private static final String PREF_WIDGET_CONFIG = "widgetConfig";
 
     private final MarketplacePortletDefinition pdef;
     private String maxURL;
@@ -202,6 +206,31 @@ public class MarketplaceEntry  implements Serializable {
     
     public List<String> getKeywords() {
       return pdef.getKeywords();
+    }
+
+
+    private String getPreference(String prefName) {
+        assert(prefName != null);
+        for (PortletPreference pref : pdef.getPortletPreferences()) {
+            assert(pref.getName() != null);
+            if (prefName.equals(pref.getName())) {
+                assert(pref.getValues().length > 0);
+                return pref.getValues()[0];
+            }
+        }
+        return null;
+    }
+
+    public String getWidgetType() {
+        return getPreference(PREF_WIDGET_TYPE);
+    }
+
+    public String getWidgetURL() {
+        return getPreference(PREF_WIDGET_URL);
+    }
+
+    public String getWidgetConfig() {
+        return getPreference(PREF_WIDGET_CONFIG);
     }
 
     @Override
