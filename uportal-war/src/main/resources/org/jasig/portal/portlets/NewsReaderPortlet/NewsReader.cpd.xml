@@ -118,6 +118,27 @@
             </single-choice-preference-input>
         </preference>
 
+        <preference>
+            <name>widgetType</name>
+            <label>AngularJS Portal Type</label>
+            <description></description>
+            <single-text-preference-input display="text"/>
+        </preference>
+
+        <preference>
+            <name>widgetURL</name>
+            <label>AngularJS Portal URL</label>
+            <description></description>
+            <single-text-preference-input display="text"/>
+        </preference>
+
+        <preference>
+            <name>widgetConfig</name>
+            <label>AngularJS Portal Config</label>
+            <description></description>
+            <single-text-preference-input display="text"/>
+        </preference>
+
     </step>
 
 </portlet-publishing-definition>
