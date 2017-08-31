@@ -26,14 +26,14 @@ import org.apereo.portal.security.PersonFactory;
 import org.apereo.portal.security.provider.RestrictedPerson;
 import org.apereo.services.persondir.IPersonAttributes;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.support.JdbcDaoSupport;
+import org.springframework.jdbc.core.simple.SimpleJdbcDaoSupport;
 
 /**
  * Helper class for reset-layout based web flows.
  *
  * <p>Depends on uPortal's {@link DataSource}.
  */
-public class UserLayoutHelperImpl extends JdbcDaoSupport implements IUserLayoutHelper {
+public class UserLayoutHelperImpl extends SimpleJdbcDaoSupport implements IUserLayoutHelper {
 
     protected static final String DEFAULT_LAYOUT_FNAME = "default";
 

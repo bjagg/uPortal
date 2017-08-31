@@ -20,14 +20,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.orm.jpa.EntityManagerFactoryUtils;
 import org.springframework.orm.jpa.EntityManagerHolder;
 import org.springframework.orm.jpa.JpaAccessor;
-import org.springframework.orm.jpa.JpaInterceptor;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 /**
  * Opens and closes an {@link EntityManager} around the execution of a portlet, participates in an
  * existing {@link EntityManager} if one already exists.
- *
- * @see JpaInterceptor
  */
 public class JpaPortletExecutionInterceptor extends JpaAccessor
         implements IPortletExecutionInterceptor {
@@ -45,7 +42,7 @@ public class JpaPortletExecutionInterceptor extends JpaAccessor
         EntityManager em = getTransactionalEntityManager();
         boolean isNewEm = false;
         if (em == null) {
-            logger.debug("Creating new EntityManager for JpaInterceptor invocation");
+            logger.debug("Creating new EntityManager for JpaAccessor invocation");
             em = createEntityManager();
             isNewEm = true;
             TransactionSynchronizationManager.bindResource(

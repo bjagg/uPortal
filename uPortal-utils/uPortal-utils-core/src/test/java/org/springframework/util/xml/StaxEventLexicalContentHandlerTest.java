@@ -15,7 +15,7 @@
 package org.springframework.util.xml;
 
 import javax.xml.stream.XMLEventFactory;
-import javax.xml.stream.util.XMLEventConsumer;
+import javax.xml.stream.util.XMLEventWriter;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -26,7 +26,7 @@ import org.xml.sax.SAXException;
 /** */
 public class StaxEventLexicalContentHandlerTest {
 
-    @Mock XMLEventConsumer consumer;
+    @Mock XMLEventWriter writer;
     @Mock XMLEventFactory factory;
 
     StaxEventLexicalContentHandler handler;
@@ -34,7 +34,7 @@ public class StaxEventLexicalContentHandlerTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        handler = new StaxEventLexicalContentHandler(consumer, factory);
+        handler = new StaxEventLexicalContentHandler(writer, factory);
     }
 
     @Test

@@ -127,7 +127,7 @@ public class DelegatingThreadPoolTaskScheduler extends ThreadPoolTaskScheduler
                 new DelegatingCallable<T>(this.executorService, task);
         final Future<Future<T>> future = super.submit(delegatingCallable);
 
-        return new DelegatingForwardingFuture<T>(future);
+        return new DelegatingForwardingFuture(future);
     }
 
     @Override
@@ -163,10 +163,9 @@ public class DelegatingThreadPoolTaskScheduler extends ThreadPoolTaskScheduler
 
         final DelegatingRunnable delegatingRunnable =
                 new DelegatingRunnable(this.executorService, task);
-        @SuppressWarnings("unchecked")
-        final ScheduledFuture<ScheduledFuture<Object>> future =
+        final ScheduledFuture<?> future =
                 super.schedule(delegatingRunnable, wrappedTrigger);
-        return new DelegatingForwardingScheduledFuture<Object>(future);
+        return new DelegatingForwardingScheduledFuture(future);
     }
 
     @Override
@@ -175,10 +174,9 @@ public class DelegatingThreadPoolTaskScheduler extends ThreadPoolTaskScheduler
 
         final DelegatingRunnable delegatingRunnable =
                 new DelegatingRunnable(this.executorService, task);
-        @SuppressWarnings("unchecked")
-        final ScheduledFuture<ScheduledFuture<Object>> future =
+        final ScheduledFuture<?> future =
                 super.schedule(delegatingRunnable, startTime);
-        return new DelegatingForwardingScheduledFuture<Object>(future);
+        return new DelegatingForwardingScheduledFuture(future);
     }
 
     @Override
@@ -189,10 +187,9 @@ public class DelegatingThreadPoolTaskScheduler extends ThreadPoolTaskScheduler
 
         final DelegatingRunnable delegatingRunnable =
                 new DelegatingRunnable(this.executorService, task);
-        @SuppressWarnings("unchecked")
-        final ScheduledFuture<ScheduledFuture<Object>> future =
+        final ScheduledFuture<?> future =
                 super.scheduleAtFixedRate(delegatingRunnable, startTime, period);
-        return new DelegatingForwardingScheduledFuture<Object>(future);
+        return new DelegatingForwardingScheduledFuture(future);
     }
 
     @Override
@@ -206,10 +203,9 @@ public class DelegatingThreadPoolTaskScheduler extends ThreadPoolTaskScheduler
 
         final DelegatingRunnable delegatingRunnable =
                 new DelegatingRunnable(this.executorService, task);
-        @SuppressWarnings("unchecked")
-        final ScheduledFuture<ScheduledFuture<Object>> future =
+        final ScheduledFuture<?> future =
                 super.scheduleAtFixedRate(delegatingRunnable, period);
-        return new DelegatingForwardingScheduledFuture<Object>(future);
+        return new DelegatingForwardingScheduledFuture(future);
     }
 
     @Override
@@ -221,10 +217,9 @@ public class DelegatingThreadPoolTaskScheduler extends ThreadPoolTaskScheduler
 
         final DelegatingRunnable delegatingRunnable =
                 new DelegatingRunnable(this.executorService, task);
-        @SuppressWarnings("unchecked")
-        final ScheduledFuture<ScheduledFuture<Object>> future =
+        final ScheduledFuture<?> future =
                 super.scheduleWithFixedDelay(delegatingRunnable, startTime, delay);
-        return new DelegatingForwardingScheduledFuture<Object>(future);
+        return new DelegatingForwardingScheduledFuture(future);
     }
 
     @Override
@@ -238,10 +233,9 @@ public class DelegatingThreadPoolTaskScheduler extends ThreadPoolTaskScheduler
 
         final DelegatingRunnable delegatingRunnable =
                 new DelegatingRunnable(this.executorService, task);
-        @SuppressWarnings("unchecked")
-        final ScheduledFuture<ScheduledFuture<Object>> future =
+        final ScheduledFuture<?> future =
                 super.scheduleWithFixedDelay(delegatingRunnable, delay);
-        return new DelegatingForwardingScheduledFuture<Object>(future);
+        return new DelegatingForwardingScheduledFuture(future);
     }
 
     private static class DelegatingRunnable implements Runnable {
@@ -287,7 +281,7 @@ public class DelegatingThreadPoolTaskScheduler extends ThreadPoolTaskScheduler
     private static class DelegatingForwardingFuture<V> implements Future<V> {
         private final Future<? extends Future<V>> future;
 
-        public DelegatingForwardingFuture(Future<? extends Future<V>> future) {
+        public DelegatingForwardingFuture(Future<? extends ScheduledFuture<V>> future) {
             this.future = future;
         }
 
@@ -320,10 +314,10 @@ public class DelegatingThreadPoolTaskScheduler extends ThreadPoolTaskScheduler
 
     private static class DelegatingForwardingScheduledFuture<V>
             extends DelegatingForwardingFuture<V> implements ScheduledFuture<V> {
-        private final ScheduledFuture<ScheduledFuture<V>> future;
+        private final ScheduledFuture<? extends ScheduledFuture<V>> future;
 
         public DelegatingForwardingScheduledFuture(
-                ScheduledFuture<ScheduledFuture<V>> scheduledFuture) {
+                ScheduledFuture<? extends ScheduledFuture<V>> scheduledFuture) {
             super(scheduledFuture);
             this.future = scheduledFuture;
         }
