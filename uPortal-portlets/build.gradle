@@ -1,6 +1,7 @@
 description = "Apereo uPortal Framework Portlets"
 
 dependencies {
+    compile project(':uPortal-api:uPortal-api-platform')
     compile project(':uPortal-io:uPortal-io-types')
     compile project(':uPortal-tenants')
     compile project(':uPortal-web')

@@ -15,19 +15,31 @@
 package org.apereo.portal.portlets.favorites;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
+
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
+
 import org.apereo.portal.UserPreferencesManager;
+import org.apereo.portal.api.groups.ApiGroupsService;
+import org.apereo.portal.api.groups.Entity;
 import org.apereo.portal.layout.IUserLayout;
 import org.apereo.portal.layout.IUserLayoutManager;
 import org.apereo.portal.layout.node.IUserLayoutChannelDescription;
 import org.apereo.portal.layout.node.IUserLayoutNodeDescription;
+import org.apereo.portal.portlet.om.IPortletDefinition;
+import org.apereo.portal.portlet.registry.IPortletDefinitionRegistry;
 import org.apereo.portal.security.IAuthorizationPrincipal;
 import org.apereo.portal.security.IAuthorizationService;
 import org.apereo.portal.security.IPerson;
 import org.apereo.portal.security.PersonFactory;
 import org.apereo.portal.user.IUserInstance;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -54,6 +66,7 @@ import org.springframework.web.portlet.bind.annotation.RenderMapping;
 @RequestMapping("VIEW")
 public class FavoritesController extends AbstractFavoritesController {
 
+    private static final Logger log = LoggerFactory.getLogger(FavoritesController.class);
     /**
      * Single-value preference that (optionally) restricts the height of the favorites list, in view
      * mode, to the specified number of pixels.
@@ -61,6 +74,10 @@ public class FavoritesController extends AbstractFavoritesController {
     public static final String MAX_HEIGHT_PIXELS_PREFERENCE = "FavoritesController.maxHeightPixels";
 
     @Autowired private IAuthorizationService authorizationService;
+
+    @Autowired private ApiGroupsService groupsService;
+
+    @Autowired private IPortletDefinitionRegistry portletDefinitionRegistry;
 
     /**
      * Handles all Favorites portlet VIEW mode renders. Populates model with user's favorites and
@@ -100,6 +117,16 @@ public class FavoritesController extends AbstractFavoritesController {
         // yet implemented.
         model.addAttribute("marketplaceFname", this.marketplaceFName);
 
+        model.addAttribute("successMessageCode", req.getParameter("successMessageCode"));
+        model.addAttribute("errorMessageCode", req.getParameter("errorMessageCode"));
+
+        model.addAttribute(
+            "nameOfFavoriteActedUpon", req.getParameter("nameOfFavoriteActedUpon"));
+        if (!FavoritesUtils.hasAnyFavorites(userLayout)) {
+            addDefaultPortlets(req.getPreferences(), ulm, ui.getPerson());
+            ulm.saveUserLayout();
+        }
+
         final List<IUserLayoutNodeDescription> collections =
                 FavoritesUtils.getFavoriteCollections(userLayout);
         model.addAttribute("collections", collections);
@@ -125,6 +152,7 @@ public class FavoritesController extends AbstractFavoritesController {
             if (nodeDescription instanceof IUserLayoutChannelDescription) {
                 final IUserLayoutChannelDescription channelDescription =
                         (IUserLayoutChannelDescription) nodeDescription;
+                log.error(channelDescription.getFunctionalName());
                 if (principal.canRender(channelDescription.getChannelPublishId())) {
                     favorites.add(nodeDescription);
                 }
@@ -153,5 +181,36 @@ public class FavoritesController extends AbstractFavoritesController {
         final String value = prefs.getValue(MAX_HEIGHT_PIXELS_PREFERENCE, null);
         final Integer rslt = value != null ? Integer.valueOf(value) : null;
         return rslt;
+    }
+
+    private void addDefaultPortlets(PortletPreferences prefs, IUserLayoutManager ulm, IPerson person) {
+        final Set<String> fnamesToAdd = new TreeSet<>();
+        final Set<String> groups = getGroupNames(person);
+        log.error(groups.toString());
+        for (String group : groups) {
+            String[] fnames = prefs.getValues(group, null);
+            if (fnames != null) {
+                fnamesToAdd.addAll(Arrays.asList(fnames));
+            }
+        }
+        log.error(fnamesToAdd.toString());
+        if (!fnamesToAdd.isEmpty()) {
+            for (String fname : fnamesToAdd) {
+                IPortletDefinition portletDef = portletDefinitionRegistry.getPortletDefinitionByFname(fname);
+                if (portletDef != null) {
+                    FavoritesUtils.addFavoritePortlet(ulm, portletDef);
+                }
+                else {
+                    log.warn("Could not find portlet definition for fname: {}", fname);
+                }
+            }
+        }
+    }
+
+    private Set<String> getGroupNames(IPerson person) {
+        final String username = person.getUserName();
+        log.error("username: {}", username);
+        final Set<Entity> groups = groupsService.getGroupsForMember(username);
+        return groups.stream().map(e -> e.getName()).collect(Collectors.toSet());
     }
 }

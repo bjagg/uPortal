@@ -592,14 +592,8 @@ public class UpdatePreferencesServlet {
         final UserPreferencesManager upm = (UserPreferencesManager) ui.getPreferencesManager();
         final IUserLayoutManager ulm = upm.getUserLayoutManager();
 
-        final IUserLayoutChannelDescription channel = new UserLayoutChannelDescription(pdef);
-
-        // get favorite tab
-        final String favoriteTabNodeId = FavoritesUtils.getFavoriteTabNodeId(ulm.getUserLayout());
-
-        if (favoriteTabNodeId != null) {
-            // add portlet to favorite tab
-            final IUserLayoutNodeDescription node = addNodeToTab(ulm, channel, favoriteTabNodeId);
+        try {
+            final IUserLayoutNodeDescription node = FavoritesUtils.addFavoritePortlet(ulm, pdef);
 
             if (node == null) {
                 response.setStatus(HttpServletResponse.SC_FORBIDDEN);
@@ -622,7 +616,7 @@ public class UpdatePreferencesServlet {
 
             // document success for notifications
             final Map<String, String> model = new HashMap<String, String>();
-            final String channelTitle = channel.getTitle();
+            final String channelTitle = node.getName();
             model.put(
                     "response",
                     getMessage(
@@ -632,7 +626,7 @@ public class UpdatePreferencesServlet {
                             locale));
             model.put("newNodeId", node.getId());
             return new ModelAndView("jsonView", model);
-        } else {
+        } catch (IllegalStateException e) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return new ModelAndView(
                     "jsonView",

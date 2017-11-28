@@ -30,6 +30,26 @@
         <style>#fav-portlet-${n} .favorites-list { max-height: ${maxHeightPixels}px; overflow-y: auto; }</style>
     </c:if>
 
+    <c:if test="${not empty errorMessageCode}">
+      <div class="alert alert-warning alert-dismissable">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+          <spring:message
+                  code="${errorMessageCode}"
+                  text="Un-defined error message."
+                  arguments="${nameOfFavoriteActedUpon}"/>
+      </div>
+    </c:if>
+
+    <c:if test="${not empty successMessageCode}">
+      <div class="alert alert-success alert-dismissable">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+        <spring:message
+                code="${successMessageCode}"
+                text="Un-defined success message."
+                arguments="${nameOfFavoriteActedUpon}"/>
+      </div>
+    </c:if>
+
     <nav class="navbar navbar-default" id="${n}">
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
@@ -46,7 +66,11 @@
         <div class="collapse navbar-collapse" id="fav-portlet-${n}">
             <ul class="list-group favorites-list">
                 <c:forEach var="collection" items="${collections}">
-                    <li class="list-group-item">
+                    <portlet:actionURL var="unFavoriteCollectionUrl">
+                      <portlet:param name="action" value="delete" />
+                      <portlet:param name="nodeId" value="${collection.id}" />
+                    </portlet:actionURL>
+                     <li class="list-group-item">
                         <span class="glyphicon glyphicon-chevron-right pull-right"></span>
                         <a href="${renderRequest.contextPath}/f/${collection.id}/render.uP">
                             <span class="favorites-icon">
@@ -54,10 +78,19 @@
                             </span>
                             <c:out value="${collection.name}" />
                         </a>
-                    </li>
+                        <c:if test="${collection.deleteAllowed}">
+                          <a href="${unFavoriteCollectionUrl}">
+                            <span class="glyphicon glyphicon-trash pull-right"></span>
+                          </a>
+                        </c:if>
+                     </li>
                 </c:forEach>
 
                 <c:forEach var="favorite" items="${favorites}">
+                    <portlet:actionURL var="unFavoritePortletUrl">
+                      <portlet:param name="action" value="delete" />
+                      <portlet:param name="nodeId" value="${favorite.id}" />
+                    </portlet:actionURL>
                     <li class="list-group-item">
                         <span class="glyphicon glyphicon-star pull-right"></span>
                         <c:set var="favoriteAnchorContent">
@@ -79,7 +112,12 @@
                             </span>
                             <c:out value="${favorite.name}" />
                         </a>
-                    </li>
+                        <c:if test="${favorite.deleteAllowed}">
+                          <a href="${unFavoritePortletUrl}">
+                            <span class="glyphicon glyphicon-trash pull-right"></span>
+                          </a>
+                        </c:if>
+                     </li>
                 </c:forEach>
             </ul>
 

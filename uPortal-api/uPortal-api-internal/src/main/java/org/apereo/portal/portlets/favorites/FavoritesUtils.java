@@ -21,10 +21,16 @@ import static org.apereo.portal.layout.node.IUserLayoutNodeDescription.LayoutNod
 import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
+
 import org.apache.commons.lang3.Validate;
 import org.apereo.portal.layout.IUserLayout;
+import org.apereo.portal.layout.IUserLayoutManager;
+import org.apereo.portal.layout.node.IUserLayoutChannelDescription;
 import org.apereo.portal.layout.node.IUserLayoutFolderDescription;
 import org.apereo.portal.layout.node.IUserLayoutNodeDescription;
+import org.apereo.portal.layout.node.UserLayoutChannelDescription;
+import org.apereo.portal.layout.node.UserLayoutFolderDescription;
+import org.apereo.portal.portlet.om.IPortletDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -240,5 +246,50 @@ public final class FavoritesUtils {
         // portlets
         return (!getFavoritePortlets(layout).isEmpty()
                 || !getFavoriteCollections(layout).isEmpty());
+    }
+
+    public static IUserLayoutNodeDescription addFavoritePortlet(IUserLayoutManager ulm, IPortletDefinition portletDef) {
+        final IUserLayoutChannelDescription channel = new UserLayoutChannelDescription(portletDef);
+        final String favoriteTabNodeId = getFavoriteTabNodeId(ulm.getUserLayout());
+        if (favoriteTabNodeId == null) {
+            throw new IllegalStateException("Can't find favorite tab");
+        }
+        return addNodeToTab(ulm, channel, favoriteTabNodeId);
+    }
+
+    /* Taken from org.apereo.portal.layout.dlm.remoting.UpdatePreferencesServlet
+       -- should be refactored into a service class
+     */
+    private static IUserLayoutNodeDescription addNodeToTab(
+        IUserLayoutManager ulm, IUserLayoutChannelDescription channel, String tabId) {
+
+        IUserLayoutNodeDescription node = null;
+
+        Enumeration<String> columns = ulm.getChildIds(tabId);
+        if (columns.hasMoreElements()) {
+            while (columns.hasMoreElements()) {
+                // attempt to add this channel to the column
+                node = ulm.addNode(channel, columns.nextElement(), null);
+                // if it couldn't be added to this column, go on and try the next
+                // one.  otherwise, we're set.
+                if (node != null) break;
+            }
+        } else {
+            IUserLayoutFolderDescription newColumn = new UserLayoutFolderDescription();
+            newColumn.setName("Column");
+            newColumn.setId("tbd");
+            newColumn.setFolderType(IUserLayoutFolderDescription.REGULAR_TYPE);
+            newColumn.setHidden(false);
+            newColumn.setUnremovable(false);
+            newColumn.setImmutable(false);
+
+            // add the column to our layout
+            IUserLayoutNodeDescription col = ulm.addNode(newColumn, tabId, null);
+
+            // add the channel
+            node = ulm.addNode(channel, col.getId(), null);
+        }
+
+        return node;
     }
 }
