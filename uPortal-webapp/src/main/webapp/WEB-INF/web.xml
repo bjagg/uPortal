@@ -226,11 +226,6 @@
     </filter-mapping>
 
     <filter-mapping>
-        <filter-name>CAS Authentication Filter</filter-name>
-        <url-pattern>/Login</url-pattern>
-    </filter-mapping>
-
-    <filter-mapping>
         <filter-name>ExceptionLoggingFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
@@ -275,16 +270,19 @@
     <filter-mapping>
         <filter-name>CAS Validate Filter</filter-name>
         <url-pattern>/Login</url-pattern>
-    </filter-mapping>
-
-    <filter-mapping>
-        <filter-name>CAS Validate Filter</filter-name>
         <url-pattern>/CasProxyServlet</url-pattern>
     </filter-mapping>
 
     <filter-mapping>
         <filter-name>CAS Assertion ThreadLocal Filter</filter-name>
         <url-pattern>/Login</url-pattern>
+        <url-pattern>/CasProxyServlet</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>CAS Authentication Filter</filter-name>
+        <url-pattern>/Login</url-pattern>
+        <url-pattern>/CasProxyServlet</url-pattern>
     </filter-mapping>
 
     <filter-mapping>

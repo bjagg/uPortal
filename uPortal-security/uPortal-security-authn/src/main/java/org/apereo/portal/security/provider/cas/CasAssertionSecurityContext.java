@@ -72,6 +72,7 @@ public class CasAssertionSecurityContext extends ChainingSecurityContext
         String propertyVal =
                 applicationContext.getBean(CAS_COPY_ASSERT_ATTR_TO_USER_ATTR_BEAN, String.class);
         copyAssertionAttributesToUserAttributes = Boolean.valueOf(propertyVal);
+        log.debug("{} = {}", CAS_COPY_ASSERT_ATTR_TO_USER_ATTR_BEAN, copyAssertionAttributesToUserAttributes);
         propertyVal = applicationContext.getBean(DECRYPT_CRED_TO_PWD, String.class);
         decryptCredentialToPassword = Boolean.valueOf(propertyVal);
 
@@ -218,12 +219,14 @@ public class CasAssertionSecurityContext extends ChainingSecurityContext
      */
     private void copyAssertionAttributesToUserAttributes(Assertion assertion) {
         if (!copyAssertionAttributesToUserAttributes) {
+            log.debug("Configured to ignore CAS assertion attributes -- skipping");
             return;
         }
 
         // skip this if there are no attributes or if the attribute set is empty.
         if (assertion.getPrincipal().getAttributes() == null
                 || assertion.getPrincipal().getAttributes().isEmpty()) {
+            log.debug("No user attributes found");
             return;
         }
 
