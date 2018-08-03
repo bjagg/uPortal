@@ -42,6 +42,7 @@ import org.apereo.portal.security.provider.cas.ICasSecurityContext;
 import org.apereo.portal.url.IPortalRequestUtils;
 import org.apereo.portal.user.IUserInstance;
 import org.apereo.portal.user.IUserInstanceManager;
+import org.jasig.cas.client.validation.Assertion;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /** Requests a CAS Proxy ticket for the current portlet and adds it to the Pluto UserInfoService. */
@@ -229,6 +230,12 @@ public class CasTicketUserInfoService implements UserInfoService {
             return null;
         }
 
+        Assertion assertion = (Assertion) request.getPortletSession().getAttribute("_const_cas_assertion_");
+        if (assertion != null && assertion.getPrincipal() != null && assertion.getPrincipal().getProxyGrantingTicket() != null) {
+            log.debug("Assertion in session has PGT: " + assertion.getPrincipal().getProxyGrantingTicket());
+        } else {
+            log.debug("no assertion in session");
+        }
         // get a proxy ticket for our portlet from the CasSecurityContext
         String proxyTicket = null;
         try {

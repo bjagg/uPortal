@@ -181,7 +181,11 @@ public class CasAssertionSecurityContext extends ChainingSecurityContext
                             + "] by using CAS Assertion ["
                             + assertion
                             + "]");
+            log.trace(assertion.getPrincipal().toString());
+            log.trace("proxyTicket: {}", assertion.getPrincipal().getProxyGrantingTicket());
+            log.trace(assertion.getAttributes().toString());
         }
+        log.trace("test assertion");
 
         if (this.assertion == null) {
             if (log.isDebugEnabled()) {
@@ -190,7 +194,15 @@ public class CasAssertionSecurityContext extends ChainingSecurityContext
             return null;
         }
 
-        final String proxyTicket = this.assertion.getPrincipal().getProxyTicketFor(target);
+        String proxyTicket = null;
+        try {
+            log.trace("about to get proxyticket");
+            proxyTicket = this.assertion.getPrincipal().getProxyTicketFor(target);
+            log.trace("finished getting proxyticket");
+        } catch (Exception e) {
+            log.error("Error retrieving proxyTicket for " + target, e);
+        }
+        log.trace("proxyTicket for {}: {}", assertion.getPrincipal().getName(), proxyTicket);
 
         if (proxyTicket == null) {
             log.error(
