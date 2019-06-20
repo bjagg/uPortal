@@ -40,6 +40,8 @@ import org.springframework.jdbc.core.support.JdbcDaoSupport;
  */
 public class UserLayoutHelperImpl extends JdbcDaoSupport implements IUserLayoutHelper {
 
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(UserLayoutHelperImpl.class);
+
     protected static final String DEFAULT_LAYOUT_FNAME = "default";
 
     private IUserIdentityStore userIdentityStore;
@@ -50,7 +52,6 @@ public class UserLayoutHelperImpl extends JdbcDaoSupport implements IUserLayoutH
 
     private IStylesheetDescriptorDao stylesheetDescriptorDao;
 
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     public void setUserLayoutStore(IUserLayoutStore userLayoutStore) {
@@ -129,12 +130,12 @@ public class UserLayoutHelperImpl extends JdbcDaoSupport implements IUserLayoutH
 
             // persist the change
             userLayoutStore.updateUserProfile(person, profile);
-            logger.info(
+            log.info(
                     "resetUserLayoutForProfileByName complete for person [{}] and profile='{}'",
                     person,
                     profile.getProfileFname());
         } catch (Exception e) {
-            logger.error(
+            log.error(
                     "Error during resetUserLayoutForProfileByName for person [{}] and profile='{}'",
                     person,
                     profile.getProfileFname(),
@@ -150,7 +151,7 @@ public class UserLayoutHelperImpl extends JdbcDaoSupport implements IUserLayoutH
             final IStylesheetDescriptor sDescriptor =
                     stylesheetDescriptorDao.getStylesheetDescriptor(
                             profile.getStructureStylesheetId());
-            logger.debug(
+            log.debug(
                     "Obtained the following IStylesheetDescriptor for person [{}] and profile='{}':  [{}]",
                     person,
                     profile.getProfileFname(),
@@ -158,7 +159,7 @@ public class UserLayoutHelperImpl extends JdbcDaoSupport implements IUserLayoutH
             final IStylesheetUserPreferences sPreferences =
                     stylesheetUserPreferencesDao.getStylesheetUserPreferences(
                             sDescriptor, person, profile);
-            logger.debug(
+            log.debug(
                     "Obtained the following IStylesheetUserPreferences for descriptor [{}], person [{}], and profile='{}':  [{}]",
                     sDescriptor,
                     person,
@@ -171,7 +172,7 @@ public class UserLayoutHelperImpl extends JdbcDaoSupport implements IUserLayoutH
             // Theme
             final IStylesheetDescriptor tDescriptor =
                     stylesheetDescriptorDao.getStylesheetDescriptor(profile.getThemeStylesheetId());
-            logger.debug(
+            log.debug(
                     "Obtained the following IStylesheetDescriptor for person [{}] and profile='{}':  [{}]",
                     person,
                     profile.getProfileFname(),
@@ -179,7 +180,7 @@ public class UserLayoutHelperImpl extends JdbcDaoSupport implements IUserLayoutH
             final IStylesheetUserPreferences tPreferences =
                     stylesheetUserPreferencesDao.getStylesheetUserPreferences(
                             tDescriptor, person, profile);
-            logger.debug(
+            log.debug(
                     "Obtained the following IStylesheetUserPreferences for descriptor [{}], person [{}], and profile='{}':  [{}]",
                     tDescriptor,
                     person,
@@ -189,12 +190,12 @@ public class UserLayoutHelperImpl extends JdbcDaoSupport implements IUserLayoutH
                 stylesheetUserPreferencesDao.deleteStylesheetUserPreferences(tPreferences);
             }
 
-            logger.info(
+            log.info(
                     "resetStylesheetUserPreferencesForProfile complete for person [{}] and profile='{}'",
                     person,
                     profile.getProfileFname());
         } catch (Exception e) {
-            logger.error(
+            log.error(
                     "Error during resetStylesheetUserPreferencesForProfile for person [{}] and profile='{}'",
                     person,
                     profile.getProfileFname(),

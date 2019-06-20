@@ -16,7 +16,9 @@ package org.apereo.portal.layout.node;
 
 import java.util.Collection;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Map;
+import org.apereo.portal.portlet.om.IPortletPreference;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -239,6 +241,13 @@ public interface IUserLayoutChannelDescription extends IUserLayoutNodeDescriptio
      * @return a <code>Map</code> of parameter names on parameter values.
      */
     Map getParameterMap();
+
+    /**
+     * Set the list of portlet preferences. Does not copy elements!
+     *
+     * @param portletPreferences list of elements to add to internal preferences list
+     */
+    void setPortletPreferences(List<IPortletPreference> portletPreferences);
 
     /**
      * Creates a <code>org.w3c.dom.Element</code> representation of the current channel.

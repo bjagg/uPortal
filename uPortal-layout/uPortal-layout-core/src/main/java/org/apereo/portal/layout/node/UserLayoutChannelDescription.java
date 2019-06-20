@@ -14,15 +14,22 @@
  */
 package org.apereo.portal.layout.node;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.pluto.container.PortletPreference;
+import org.apache.pluto.container.impl.PortletPreferenceImpl;
 import org.apereo.portal.PortalException;
 import org.apereo.portal.portlet.om.IPortletDefinition;
 import org.apereo.portal.portlet.om.IPortletDefinitionParameter;
+import org.apereo.portal.portlet.om.IPortletPreference;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -31,7 +38,10 @@ import org.w3c.dom.Node;
 public class UserLayoutChannelDescription extends UserLayoutNodeDescription
         implements IUserLayoutChannelDescription {
 
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(UserLayoutChannelDescription.class);
+
     Hashtable parameters = new Hashtable();
+    List<PortletPreference> preferences = new ArrayList();
 
     private String title = null;
     private String description = null;
@@ -57,7 +67,6 @@ public class UserLayoutChannelDescription extends UserLayoutNodeDescription
     public UserLayoutChannelDescription(IPortletDefinition definition) {
         this.title = definition.getTitle();
         this.name = definition.getName();
-        this.name = definition.getName();
         this.description = definition.getDescription();
         this.channelPublishId = String.valueOf(definition.getPortletDefinitionId().getStringId());
         this.channelTypeId = String.valueOf(definition.getType().getId());
@@ -66,6 +75,11 @@ public class UserLayoutChannelDescription extends UserLayoutNodeDescription
 
         for (IPortletDefinitionParameter param : definition.getParameters()) {
             this.setParameterValue(param.getName(), param.getValue());
+        }
+
+        this.setPortletPreferences(definition.getPortletPreferences());
+        if (!definition.getPortletPreferences().isEmpty()) {
+            log.error("constructor - preferences count: {} for {}", this.preferences.size(), this.name);
         }
     }
 
@@ -107,9 +121,20 @@ public class UserLayoutChannelDescription extends UserLayoutNodeDescription
                     if (pName != null && pValue != null) {
                         this.setParameterValue(pName, pValue);
                     }
+                } else if (e.getNodeName().equals("portletPreference")) {
+                    // get parameter name and value
+                    String pName = e.getAttribute("name");
+                    String pValue = e.getAttribute("value");
+
+                    if (pName != null && pValue != null) {
+                        String[] val = {pValue};
+                        PortletPreference pref = new PortletPreferenceImpl(pName, val);
+                        this.preferences.add(pref);
+                    }
                 }
             }
         }
+        log.error("preferences count: {}", this.preferences.size());
     }
 
     /**
@@ -419,6 +444,15 @@ public class UserLayoutChannelDescription extends UserLayoutNodeDescription
         return Collections.unmodifiableMap(parameters);
     }
 
+    @Override
+    public void setPortletPreferences(List<IPortletPreference> portletPreferences) {
+        this.preferences.clear();
+        this.preferences.addAll(portletPreferences);
+        if (!portletPreferences.isEmpty()) {
+            log.error("setter - preferences count: {} for {}", this.preferences.size(), this.name);
+        }
+    }
+
     /**
      * Creates a <code>org.w3c.dom.Element</code> representation of the current channel.
      *
@@ -427,20 +461,37 @@ public class UserLayoutChannelDescription extends UserLayoutNodeDescription
      */
     @Override
     public Element getXML(Document root) {
+        log.error("calling getXML()");
         Element node = root.createElement("channel");
         this.addNodeAttributes(node);
         this.addParameterChildren(node, root);
+        this.addPreferencesChildren(node, root);
         return node;
     }
 
     private void addParameterChildren(Element node, Document root) {
+        log.error("calling addParameterChildren()");
         for (Enumeration enum1 = this.getParameterNames(); enum1.hasMoreElements(); ) {
-            Element pElement = root.createElement("parameter");
-            String pName = (String) enum1.nextElement();
-            pElement.setAttribute("name", pName);
-            pElement.setAttribute("value", getParameterValue(pName));
+            String name = (String) enum1.nextElement();
+            String value = getParameterValue(name);
+            Element pElement = createElement(root, "parameter", name, value);
             node.appendChild(pElement);
         }
+    }
+
+    private void addPreferencesChildren(Element node, Document root) {
+        log.error("calling addPreferencesChildren()");
+        this.preferences.stream()
+            .filter(p -> p.getValues() != null && p.getValues().length > 0)
+            .map(p -> createElement(root, "preference", p.getName(), p.getValues()[0]))
+            .forEach(e -> node.appendChild(e));
+    }
+
+    private Element createElement(Document root, String nodeName, String nameAttr, String valueAttr) {
+        Element el = root.createElement(nodeName);
+        el.setAttribute("name", nameAttr);
+        el.setAttribute("value", valueAttr);
+        return el;
     }
 
     @Override

@@ -470,6 +470,8 @@ public class TransientUserLayoutManagerWrapper implements IUserLayoutManager {
             ulnd.setParameterValue(parm.getName(), parm.getValue());
         }
 
+        ulnd.setPortletPreferences(chanDef.getPortletPreferences());
+
         return ulnd;
     }
 
