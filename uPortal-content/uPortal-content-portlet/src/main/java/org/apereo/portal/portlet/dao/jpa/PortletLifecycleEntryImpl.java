@@ -28,9 +28,11 @@ import org.apereo.portal.portlet.om.IPortletLifecycleEntry;
 import org.apereo.portal.portlet.om.PortletLifecycleState;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.Immutable;
 
 /** JPA implementation of the IPortletParameter interface. */
 @Entity
+@Immutable
 @Table(name = "UP_PORTLET_LIFECYCLE")
 @SequenceGenerator(
         name = "UP_PORTLET_LIFECYCLE_GEN",

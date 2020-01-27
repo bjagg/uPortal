@@ -178,7 +178,7 @@ public class PortletDefinitionImpl implements IPortletDefinition {
             orphanRemoval = true)
     @JoinColumn(name = "PORTLET_DEF_ID", nullable = false)
     @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-    @Fetch(FetchMode.SELECT) // FM JOIN does BAD things to collections that support duplicates
+    @Fetch(FetchMode.JOIN) // FM JOIN does BAD things to collections that support duplicates
     @OrderBy("ENTRY_DATE ASC")
     private List<IPortletLifecycleEntry> lifecycleEntries = new ArrayList<>();
 
