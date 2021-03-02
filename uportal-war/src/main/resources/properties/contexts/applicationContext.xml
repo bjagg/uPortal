@@ -28,10 +28,10 @@
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
-        
+
 
     <aop:aspectj-autoproxy/>
-    
+
     <context:annotation-config/>
     <context:component-scan base-package="org.jasig.portal">
         <context:exclude-filter type="regex" expression="org\.jasig\.portal\.portlets\."/>
@@ -39,20 +39,21 @@
         <context:exclude-filter type="regex" expression="org\.jasig\.portal\.json\.rendering\."/>
         <context:exclude-filter type="regex" expression="org\.jasig\.portal\.layout\.dlm\.remoting\."/>
         <context:exclude-filter type="regex" expression="org\.jasig\.portal\.security\.remoting\."/>
+        <context:exclude-filter type="regex" expression="org\.jasig\.portal\.health\..+"/>
         <context:exclude-filter type="regex" expression="org\.jasig\.portal\.rest\."/>
         <context:exclude-filter type="regex" expression="org\.jasig\.portal\.redirect\."/>
         <context:exclude-filter type="regex" expression="org\.jasig\.portal\.rendering\."/>
     </context:component-scan>
-    
+
     <bean id="primaryPropertyPlaceholderConfigurer" class="org.springframework.context.support.PortalPropertySourcesPlaceholderConfigurer">
         <property name="locations">
             <list>
               <value>classpath:/properties/rdbm.properties</value>
               <value>classpath:/properties/security.properties</value>
               <value>classpath:/properties/portal.properties</value>
-              <!-- 
+              <!--
                |  The following files optionally allow deployers to set or override many uPortal
-               |  configuration settings in a outside the control of the build/deploy cycle, SCM, 
+               |  configuration settings in a outside the control of the build/deploy cycle, SCM,
                |  and Tomcat.
                |
                |  Reasons for choosing that may include:
@@ -60,11 +61,11 @@
                |    - Ability to change some common settings without a full build and deploy cycle
                |    - Building a WAR/EAR that is environment-independent.
                |
-               |  Any property defined in the above files that is referenced in the Spring context 
+               |  Any property defined in the above files that is referenced in the Spring context
                |  may be overridden in one (or both) of these files.
                |
-               |  The default location for overrides is ${CATALINA_HOME}/portal/overrides.properties;  
-               |  you can use a custom location by specifying PORTAL_HOME as a JVM startup argument 
+               |  The default location for overrides is ${CATALINA_HOME}/portal/overrides.properties;
+               |  you can use a custom location by specifying PORTAL_HOME as a JVM startup argument
                |  or as an environment variable.
                |
                |  The first two files (overrides.properties) are intended to contain properties,
@@ -95,7 +96,7 @@
             </props>
         </property>
     </bean>
-    
+
     <util:map id="productVersions" value-type="org.jasig.portal.version.om.Version">
     	<entry value="4.1.0">
     		<key><util:constant static-field="org.jasig.portal.jpa.BasePortalJpaDao.PERSISTENCE_UNIT_NAME"/></key>
@@ -107,9 +108,9 @@
     		<key><util:constant static-field="org.jasig.portal.jpa.BaseAggrEventsJpaDao.PERSISTENCE_UNIT_NAME"/></key>
     	</entry>
     </util:map>
-    
+
     <bean class="org.springframework.beans.factory.annotation.RequiredAnnotationBeanPostProcessor" lazy-init="false" />
-    
+
     <bean id="portalPropertyEditorRegistrar" class="org.jasig.portal.spring.properties.PortalPropertyEditorRegistrar">
         <property name="propertyEditors">
             <map key-type="java.lang.Class">
@@ -134,7 +135,7 @@
             </list>
         </property>
     </bean>
-    
+
     <bean class="org.springframework.beans.factory.config.CustomScopeConfigurer">
         <property name="scopes">
             <map>
@@ -164,6 +165,6 @@
             </map>
         </property>
     </bean>
-    
+
     <bean id="objectMapper" class="org.jasig.portal.spring.beans.factory.ObjectMapperFactoryBean" />
 </beans>
