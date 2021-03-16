@@ -7,6 +7,9 @@ dependencies {
     compile project(':uPortal-persondir')
     compile project(':uPortal-rendering')
     compile project(':uPortal-security:uPortal-security-services')
+    compile "org.slf4j:slf4j-api:${slf4jVersion}"
+    compileOnly "org.projectlombok:lombok:${lombokVersion}"
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 
     compileOnly "${portletApiDependency}"
     compileOnly "${servletApiDependency}"

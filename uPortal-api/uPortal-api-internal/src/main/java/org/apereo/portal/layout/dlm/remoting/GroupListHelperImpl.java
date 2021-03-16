@@ -325,7 +325,7 @@ public class GroupListHelperImpl implements IGroupListHelper {
         // otherwise use the getGroupMember method
         else {
             IGroupMember entity = GroupService.getGroupMember(entityId, entityEnum.getClazz());
-            if (entity == null || entity instanceof IEntityGroup) {
+            if (entity == null || "null".equals(entityId) || entity instanceof IEntityGroup) {
                 return null;
             }
             JsonEntityBean jsonBean = new JsonEntityBean(entity, entityEnum);

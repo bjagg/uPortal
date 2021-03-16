@@ -555,6 +555,7 @@ public class AuthorizationImpl implements IAuthorizationService {
             String target,
             IPermissionPolicy policy)
             throws AuthorizationException {
+        logger.debug("target: {}", target);
 
         final CacheKeyBuilder<Serializable, Serializable> cacheKeyBuilder =
                 CacheKey.builder(AuthorizationImpl.class.getName());
@@ -588,7 +589,9 @@ public class AuthorizationImpl implements IAuthorizationService {
         if (ipActivity != null) {
             final IPermissionTargetProvider targetProvider =
                     targetProviderRegistry.getTargetProvider(ipActivity.getTargetProviderKey());
+            logger.debug("targetProvider: {}", targetProvider.getClass().getName() );
             final IPermissionTarget ipTarget = targetProvider.getTarget(target);
+            logger.debug("ipTarget: {}", ipTarget);
             rslt =
                     policy.doesPrincipalHavePermission(
                             this, principal, ipOwner, ipActivity, ipTarget);

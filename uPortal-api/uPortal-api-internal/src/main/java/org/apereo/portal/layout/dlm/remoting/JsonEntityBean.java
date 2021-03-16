@@ -17,6 +17,9 @@ package org.apereo.portal.layout.dlm.remoting;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apereo.portal.groups.IEntityGroup;
 import org.apereo.portal.groups.IGroupMember;
@@ -25,6 +28,7 @@ import org.apereo.portal.portlets.groupselector.EntityEnum;
 import org.apereo.portal.security.IPermission;
 
 /** Entity bean for JSON output. Used for categories, groups, and people. */
+@Slf4j
 public class JsonEntityBean implements Serializable, Comparable<JsonEntityBean> {
 
     private static final long serialVersionUID = 1L;
@@ -58,6 +62,7 @@ public class JsonEntityBean implements Serializable, Comparable<JsonEntityBean> 
         if (entityType == null) {
             throw new IllegalArgumentException("entityType cannot be null.");
         }
+        log.debug(groupMember.toString());
         this.id = groupMember.getKey();
         String prefix = ""; // default
         switch (entityType) {
@@ -80,6 +85,7 @@ public class JsonEntityBean implements Serializable, Comparable<JsonEntityBean> 
         if (entityType == null) {
             throw new IllegalArgumentException("entityType cannot be null.");
         }
+        log.debug(entityGroup.toString());
         this.entityType = entityType;
         this.id = entityGroup.getKey();
         this.name = entityGroup.getName();
@@ -173,6 +179,7 @@ public class JsonEntityBean implements Serializable, Comparable<JsonEntityBean> 
     public String getTypeAndIdHash() {
         assert (entityType != null);
         assert (id != null);
+        log.debug("type: {}, id: {}", entityType.toString().toLowerCase(Locale.ROOT), id);
         String idStr = id.replaceAll("\\W", "__");
         return entityType.toString().toLowerCase() + "_" + idStr;
     }

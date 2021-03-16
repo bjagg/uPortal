@@ -18,10 +18,13 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.PostConstruct;
+
+import lombok.extern.slf4j.Slf4j;
 import org.apereo.portal.io.xml.IPortalDataHandlerService;
 import org.apereo.portal.io.xml.IPortalDataType;
 import org.springframework.beans.factory.annotation.Autowired;
 
+@Slf4j
 public class PortalDataTypeTargetProviderImpl implements IPermissionTargetProvider {
 
     private Map<String, IPermissionTarget> targetMap = new HashMap<String, IPermissionTarget>();
@@ -33,6 +36,7 @@ public class PortalDataTypeTargetProviderImpl implements IPermissionTargetProvid
         Iterable<IPortalDataType> dataTypes = portalDataHandlerService.getExportPortalDataTypes();
         for (IPortalDataType type : dataTypes) {
             final String typeId = type.getTypeId();
+            log.debug("typeId: {}", typeId);
             targetMap.put(
                     typeId,
                     new PermissionTargetImpl(
@@ -42,6 +46,7 @@ public class PortalDataTypeTargetProviderImpl implements IPermissionTargetProvid
 
     @Override
     public IPermissionTarget getTarget(String key) {
+        log.debug("getTarget for key: {}", key);
         return targetMap.get(key);
     }
 

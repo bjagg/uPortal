@@ -10,6 +10,9 @@ dependencies {
     compile project(':uPortal-io:uPortal-io-jaxb')
     compile project(':uPortal-security:uPortal-security-core')
     compile project(':uPortal-spring')
+    compile "org.slf4j:slf4j-api:${slf4jVersion}"
+    compileOnly "org.projectlombok:lombok:${lombokVersion}"
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 
     annotationProcessor "org.hibernate:hibernate-jpamodelgen:${hibernateJpamodelgenVersion}"
 }
