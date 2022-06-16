@@ -33,6 +33,9 @@ import org.apereo.portal.url.UrlType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Collection of useful methods for searching portlet definitions.
  *
@@ -68,6 +71,7 @@ public class PortletRegistryUtil {
          * it is insensitive.
          */
         final String lcQuery = query.toLowerCase();
+        /*
         final boolean titleMatch = portlet.getTitle().toLowerCase().contains(lcQuery);
         final boolean nameMatch = portlet.getName().toLowerCase().contains(lcQuery);
         final boolean descMatch =
@@ -75,6 +79,21 @@ public class PortletRegistryUtil {
                         && portlet.getDescription().toLowerCase().contains(lcQuery);
         final boolean fnameMatch = portlet.getFName().toLowerCase().contains(lcQuery);
         return titleMatch || nameMatch || descMatch || fnameMatch;
+         */
+
+        // TODO: create unit test for the static method
+        final Set<String> fields = new HashSet<>();
+        fields.add(portlet.getName());
+        fields.add(portlet.getTitle());
+        fields.add(portlet.getFName());
+        if (portlet.getDescription() != null) {
+            fields.add(portlet.getDescription());
+        }
+        if (portlet.getParameter("keywords") != null) {
+            fields.add(portlet.getParameter("keywords").getValue());
+        }
+
+        return fields.stream().anyMatch(f -> f.toLowerCase().contains(lcQuery));
     }
 
     /**
