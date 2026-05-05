@@ -36,12 +36,10 @@
     <!-- Bootstrap 5 CSS -->
     <css included="plain">/resource-server/webjars/bootstrap/dist/css/bootstrap.css</css>
     <css included="aggregated">/resource-server/webjars/bootstrap/dist/css/bootstrap.min.css</css>
-    <css>/resource-server/webjars/bootstrap/dist/css/bootstrap.min.css</css>
-    
+
     <!-- Bootstrap 5 JS -->
     <js included="plain">/resource-server/webjars/bootstrap/dist/js/bootstrap.bundle.js</js>
     <js included="aggregated">/resource-server/webjars/bootstrap/dist/js/bootstrap.bundle.min.js</js>
-    <js>/resource-server/webjars/bootstrap/dist/js/bootstrap.bundle.min.js</js>
 
     <js included="plain">/resource-server/webjars/jquery-migrate/dist/jquery-migrate.js</js>
     <js included="aggregated">/resource-server/webjars/jquery-migrate/dist/jquery-migrate.min.js</js>
